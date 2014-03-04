@@ -65,11 +65,24 @@
       "bottom: 0",
       "padding-top: %spx".replace("%s", topOffset),
       "background-color: #ffe",
-      "text-align: center",
-      "font-family: Georgia",
-      "font-size: 1.5em",
-      "color: #333"
+      "font-family: Helvetica Neue, Helvetica, Arial, sans-serif",
+      "font-size: 2em",
+      "color: #333",
+      "text-align: center"
     ].join(";");
+
+    var textDisplay = document.createElement("span");
+    textDisplay.style.cssText = [
+      "padding: 1em 2em",
+      "width: 50%",
+      "border: 3px solid #eed",
+      "display: inline-block",
+      "text-overflow: ellipsis",
+      "overflow: hidden",
+      "white-space: nowrap"
+    ].join(";");
+
+    display.appendChild(textDisplay);
 
     var body = document.body;
     body.appendChild(display);
@@ -83,17 +96,17 @@
     function nextWord () {
       var word = words.shift();
       if (typeof word != "undefined") {
-        display.innerText = word;
+        textDisplay.innerText = word;
         timeout = setTimeout(nextWord, ms);
       }
       else {
         setTimeout(function () {
-          display.innerHTML = "<p>" + numWords + " words completed in ~" + parseInt(numWords * ms / 1000) + " seconds.</p><p>^_^</p>";
+          display.innerHTML = "<p>" + numWords + " words completed in ~" + parseInt(numWords * ms / 1000) + " seconds</p></p>^_^</p>";
         }, 1000);
       }
     }
 
-    display.innerText = "Ready, set..";
+    textDisplay.innerText = "Ready, set..";
     setTimeout(nextWord, 1000);
 
     display.onclick = function () {
@@ -108,7 +121,11 @@
   }
 
   var rawText = strip(getSelectionHtml())
-    .replace(".", ". ");
+  .replace(".", ". ")
+  .replace(/\r/g, " ")
+  .replace(/\n/g, " ");
+
+  console.log(rawText);
 
   var words = rawText.split(" ")
     .filter(function (word) { return word !== ""; })
@@ -119,7 +136,7 @@
     return;
   }
 
-  words.push(" ");
+  words.push("&nbsp;");
 
   play(words, wps);
 
