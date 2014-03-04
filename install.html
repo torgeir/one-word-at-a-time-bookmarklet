@@ -1,0 +1,142 @@
+
+<!doctype html>
+<!--
+  A one-one-word-at-a-time bookmarklet, highly inspired by readquick.
+  https://github.com/torgeir/one-word-at-a-time-bookmarklet
+  @torgeir
+-->
+<meta charset=utf-8>
+<title>one-word-at-a-time bookmarklet</title>
+<style>
+  body {
+    text-align: center;
+    font-family: Georgia;
+    background-color: #ffe;
+    color: #333;
+  }
+</style>
+<body>
+<h1>One-word-at-a-time bookmarklet</h1>
+<p><a href='javascript:(function (wps) {
+  /* http://stackoverflow.com/questions/6251937/how-to-get-selecteduser-highlighted-text-in-contenteditable-element-and-replac */
+  function getSelectionHtml () {
+    var html = "";
+
+    if (typeof window.getSelection != "undefined") {
+      var sel = window.getSelection();
+      if (sel.rangeCount) {
+        var container = document.createElement("div");
+        for (var i = 0, len = sel.rangeCount; i < len; ++i) {
+          container.appendChild(sel.getRangeAt(i).cloneContents());
+        }
+        html = container.innerHTML;
+      }
+    } else if (typeof document.selection != "undefined") {
+      if (document.selection.type == "Text") {
+        html = document.selection.createRange().htmlText;
+      }
+    }
+    return html;
+  }
+
+  function strip (html) {
+    var tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
+
+  }
+
+  function trim (text) {
+    return text.trim();
+  }
+
+  function play (words, wps) {
+
+    var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+    var topOffset = h - h/1.618;
+
+    var display = document.createElement("div");
+    display.style.cssText = [
+      "position: absolute",
+      "z-index: 9999",
+      "top: 0",
+      "left: 0",
+      "right: 0",
+      "bottom: 0",
+      "padding-top: %spx".replace("%s", topOffset),
+      "background-color: #ffe",
+      "text-align: center",
+      "font-family: Georgia",
+      "font-size: 1.5em",
+      "color: #333"
+    ].join(";");
+
+    var body = document.body;
+    body.appendChild(display);
+    body.scrollTop = 0;
+
+    var numWords = words.length;
+
+    var ms = 1000 / (wps / 60);
+
+    var timeout;
+    function nextWord () {
+      var word = words.shift();
+      if (typeof word != "undefined") {
+        display.innerText = word;
+        timeout = setTimeout(nextWord, ms);
+      }
+      else {
+        setTimeout(function () {
+          display.innerHTML = "<p>" + numWords + " words completed in ~" + parseInt(numWords * ms / 1000) + " seconds.</p><p>^_^</p>";
+        }, 1000);
+      }
+    }
+
+    display.innerText = "Ready, set..";
+    setTimeout(nextWord, 1000);
+
+    display.onclick = function () {
+      if (timeout) {
+        clearTimeout(timeout);
+        timeout = null;
+      }
+
+      var parent = display.parentNode;
+      parent.removeChild(display);
+    };
+  }
+
+  var rawText = strip(getSelectionHtml())
+    .replace(".", ". ");
+
+  var words = rawText.split(" ")
+    .filter(function (word) { return word !== ""; })
+    .map(trim);
+
+  if (!words.length) {
+    alert("Read what? Select some text!");
+    return;
+  }
+
+  words.push(" ");
+
+  play(words, wps);
+
+  })(/* Adjust this number to change the speed (words per minute) */ 400)'>Drag me to your bookmarks bar!</a>
+</p>
+<p>Right click, edit, and rename it to something useful.<p>
+<p>Select some text on a web page.</p>
+<p>Click the bookmark.</p>
+<p>Read.<p>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-45118411-3', 'wa.gd');
+  ga('send', 'pageview');
+</script>
+</body>
