@@ -1,4 +1,3 @@
-
 <!doctype html>
 <!--
   A one-one-word-at-a-time bookmarklet, highly inspired by readquick.
@@ -132,8 +131,6 @@
   .replace(".", ". ")
   .replace(/\r/g, " ")
   .replace(/\n/g, " ");
-
-  console.log(rawText);
 
   var words = rawText.split(" ")
     .filter(function (word) { return word !== ""; })
