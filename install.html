@@ -17,7 +17,7 @@
 </style>
 <body>
 <h1>One-word-at-a-time bookmarklet</h1>
-<p><a href='javascript:(function (wps) {
+<p><a href='javascript:(function (wpm) {
   /* http://stackoverflow.com/questions/6251937/how-to-get-selecteduser-highlighted-text-in-contenteditable-element-and-replac */
   function getSelectionHtml () {
     var html = "";
@@ -50,7 +50,7 @@
     return text.trim();
   }
 
-  function play (words, wps) {
+  function play (words, wpm) {
 
     var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     var topOffset = h - h/1.618;
@@ -90,14 +90,22 @@
 
     var numWords = words.length;
 
-    var ms = 1000 / (wps / 60);
+    var ms = 1000 / (wpm / 60);
 
     var timeout;
     function nextWord () {
       var word = words.shift();
       if (typeof word != "undefined") {
         textDisplay.innerText = word;
-        timeout = setTimeout(nextWord, ms);
+
+        var adjustedMs = ms;
+        if (word.indexOf(".") != -1) {
+          adjustedMs *= 1.8;
+        }
+        else if (word.indexOf(",") != -1) {
+          adjustedMs *= 1.4;
+        }
+        timeout = setTimeout(nextWord, adjustedMs);
       }
       else {
         setTimeout(function () {
@@ -138,7 +146,7 @@
 
   words.push("&nbsp;");
 
-  play(words, wps);
+  play(words, wpm);
 
   })(/* Adjust this number to change the speed (words per minute) */ 400)'>Drag me to your bookmarks bar!</a>
 </p>
